@@ -1,4 +1,4 @@
-import { SchemaType } from "@google/generative-ai";
+import { Type as SchemaType } from "@google/genai";
 
 const judgeSchema = {
     type: SchemaType.OBJECT,

@@ -1,72 +1,89 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-// Removed Events import as we are not emitting anymore
-import Events from 'events';
+import { GoogleGenAI } from "@google/genai";
 import fs from 'fs';
 
-import Case from './Case.js';
-import Judge from './Judge.js';
-
-import caseSchema from "../schemas/case_schema.js";
-import judgeSchema from "../schemas/judge_schema.js";
-import replySchema from "../schemas/reply_schema.js";
+// Import new classes and schemas
+import DebateTopic from './DebateTopic.js';
+import Moderator from './Moderator.js';
+import debateTopicSchema from "../../schemas/debate_topic_schema.js";
+import moderatorSchema from "../../schemas/moderator_schema.js";
+import replySchema from "../../schemas/reply_schema.js"; // Keep reply schema
 
 // Removed extends Events
-class Game extends Events {
+class Game {
     constructor(data) {
-        // super(); // Removed super() call
-        this.case = data.case;
-        this.judge = data.judge;
-        this.state = "INIT";
-        this.turn = "INIT";
-        this.playerRepresent = "PLAINTIFF"; // Default, can be set
-        this.gameChat = null; // Initialize gameChat
-        this.model = "gemini-2.0-flash-lite";
+        // Use new property names and roles
+        this.topic = data.topic; // Renamed from case
+        this.moderator = data.moderator; // Renamed from judge
+        this.state = "INIT"; // INIT, INITIALIZED, STARTED, FINISHED
+        this.turn = null; // null, DEBATER_A, DEBATER_B
+        this.gameChat = null;
+        this.model = "gemini-2.0-flash-lite"; // DO NOT CHANGE
+        this.playerA = data.playerA; // Connection ID of Debater A
+        this.playerB = data.playerB; // Connection ID of Debater B
+        this.gameOwner = data.gameOwner; // Connection ID of the owner (Debater A)
+        this.gameId = data.gameId;
+        // Use new roles
+        this.players = new Map(); // Stores { connectionId: { connection: wsConnection, role: 'DEBATER_A' | 'DEBATER_B' } }
+
+        if (data.ownerConnection) {
+            // Assign role DEBATER_A to the owner
+            const ownerRole = "DEBATER_A";
+            this.players.set(this.gameOwner, { connection: data.ownerConnection, role: ownerRole });
+        }
     }
 
-    async initGame() {
-        const caseRulePrompt = fs.readFileSync('./prompts/case_init.txt', 'utf-8'); // Adjusted path assuming execution from root
+    // Update role assignment
+    setPlayerA(connectionId, connection) {
+        this.playerA = connectionId;
+        this.players.set(connectionId, { connection: connection, role: "DEBATER_A" }); // Player A is Debater A
+        console.log(`Debater A (${connectionId}) set for game ${this.gameId}`);
+    }
 
-        // No longer needs to return a promise explicitly, async handles it
-        const genAI = new GoogleGenerativeAI(process.env.AI_API);
-        const model = genAI.getGenerativeModel({
-            model: this.model // Using a recommended model
-        });
+    // Update role assignment
+    setPlayerB(connectionId, connection) {
+        this.playerB = connectionId;
+        this.players.set(connectionId, { connection: connection, role: "DEBATER_B" }); // Player B is Debater B
+        console.log(`Debater B (${connectionId}) set for game ${this.gameId}`);
+    }
+
+    // Helper to get player role
+    getPlayerRole(connectionId) {
+        const player = this.players.get(connectionId);
+        return player ? player.role : null;
+    }
+
+    // Removed the switchTurn() method as turns are no longer automatic
+
+    async initGame() {
+        // Use renamed prompt file
+        const debateRulePrompt = fs.readFileSync('./prompts/debate_init.txt', 'utf-8');
+        const genAI = new GoogleGenAI({ apiKey: process.env.AI_API });
 
         const history = [
             {
                 role: "user",
                 parts: [
-                    {
-                        text: "YOU ARE GOING TO BE PART OF A NEW GAME SESSION OF A COURTROOM SIMULATOR. YOU ARE GOING AGAINST A REAL HUMAN PLAYER. YOU ARE GOING TO PLAY THE PART OF THE JUDGE, WITNESSES, OPPONENT LAWYER, PLAINTIFF, AND DEFENDANT."
-                    },
-                    {
-                        text: "YOU ARE GOING TO PLAY YOUR PART INDEPENDANTLY AND EXCLUSIVELY FROM OTHER ROLE SO ACT LIKE NO OTHER PEOPLE."
-                    },
-                    {
-                        text: `\n${caseRulePrompt}\n` // Ensure newlines
-                    },
-                    // Removed the instruction to reply as judge immediately here.
-                    // We will ask for the initial message separately.
-                    {
-                        text: "Judge profile:\n" + JSON.stringify(this.judge)
-                    },
-                    {
-                        text: "Case details:\n" + JSON.stringify(this.case)
-                    }
+                    // Updated system prompt
+                    { text: "YOU ARE GOING TO BE PART OF A NEW GAME SESSION OF A DEBATE SIMULATOR. YOU WILL ACT AS THE AI MODERATOR FOR A DEBATE BETWEEN TWO HUMAN PLAYERS (DEBATER A and DEBATER B)." },
+                    { text: "YOU MUST FOLLOW THE PROVIDED RULES AND GUIDE THE DEBATE BASED ON A SPECIFIC UN SUSTAINABLE DEVELOPMENT GOAL (SDG) TOPIC." },
+                    { text: `\n${debateRulePrompt}\n` },
+                    // Provide moderator profile and topic details
+                    { text: "Your Moderator profile:\n" + JSON.stringify(this.moderator) },
+                    { text: "Debate Topic details (Based on UN SDGs):\n" + JSON.stringify(this.topic) } // Use this.topic
                 ]
             },
             {
                 role: "model",
-                parts: [{ text: "Understood. I am ready to proceed with the case simulation based on the provided details and rules. I will act as the Judge initially." }]
+                // Updated initial model response
+                parts: [{ text: "Understood. I am ready to moderate the debate based on the provided SDG topic, my profile, and the rules. I will start by introducing the debate and asking Debater A for their opening statement." }]
             }
         ];
 
-        // Validate history structure if necessary before starting chat
-        // console.log("Initial History:", JSON.stringify(history, null, 2));
-
-        const gameChat = model.startChat({
+        // Use genAI.chats.create as per the documentation example
+        const gameChat = genAI.chats.create({
+            model: this.model, // Use the instance model name
             history: history,
-            generationConfig: {
+            config: { // Pass generation config here
                 responseMimeType: "application/json",
                 responseSchema: replySchema,
                 temperature: 1.2,
@@ -75,11 +92,12 @@ class Game extends Events {
         });
 
         this.gameChat = gameChat;
-        this.state = "INITIALIZED"; // Update state
-        console.alert("Game chat initialized.");
+        this.state = "INITIALIZED";
+        console.alert("Debate chat initialized."); // Keep console alert generic
     }
 
-    async doInitialJudgeMessage() {
+    // Renamed method and updated prompt
+    async doInitialModeratorMessage() {
         if (!this.gameChat) {
             throw new Error("Game chat not initialized. Call initGame first.");
         }
@@ -87,188 +105,197 @@ class Game extends Events {
             throw new Error("Game already started or not initialized.");
         }
 
-        console.log("Requesting initial judge message...");
-        const result = await this.gameChat.sendMessage(
-            `
-                AS THE JUDGE, PROVIDE YOUR OPENING STATEMENT TO START THE COURT SESSION.
-                ADDRESS BOTH SIDES (PLAINTIFF AND DEFENDANT) AND OUTLINE THE CASE BRIEFLY BASED ON THE PROVIDED DETAILS.
+        console.log("Requesting initial moderator message...");
+        const prompt = `
+                AS THE MODERATOR, PROVIDE YOUR OPENING REMARKS TO START THE DEBATE.
+                INTRODUCE YOURSELF, THE DEBATE TOPIC (INCLUDING THE SPECIFIC UN SDG), AND THE DEBATERS (Debater A and Debater B).
+                STATE THE BASIC STRUCTURE/RULES BRIEFLY (e.g., opening statements, argument rounds, closing statements).
                 YOUR RESPONSE SHOULD BE IN THE EXPECTED JSON FORMAT.
-                REPLY PROFILE: ${JSON.stringify(this.judge)}
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-            `
-        );
-        const response = await result.response.text();
+                SPECIFY THAT IT IS DEBATER A's TURN NEXT using the 'nextTurn' field ('DEBATER_A').
+                SET the 'nextAction' field to 'REQUEST_OPENING_A'.
+                YOUR MODERATOR PROFILE: ${JSON.stringify(this.moderator)}
+                DEBATE TOPIC (SDG Focus): ${JSON.stringify(this.topic)} // Use this.topic
+            `;
+        // Use the object format { message: prompt } for sendMessage
+        const result = await this.gameChat.sendMessage({ message: prompt });
+
+        // Access response text directly via result.text
+        const responseText = result.text;
+        console.log("Received initial moderator response text:", responseText); // Added log
+        const parsedResponse = JSON.parse(responseText);
+
         this.state = "STARTED";
-        this.turn = "PLAYER_A";
-        
-        const resJSON = JSON.parse(response);
-        this.emit('game:' + resJSON.nextActionm, resJSON);
+        // Ensure turn uses new role names
+        this.turn = parsedResponse.nextTurn || "DEBATER_A"; // Use DEBATER_A
+        console.log(`Debate started. Initial turn set to: ${this.turn}`);
 
-        return JSON.parse(response);
+        return parsedResponse;
     }
 
-    async messageAsPlayer(message) {
-        if (!this.gameChat) throw new Error("Game chat not initialized.");
-        if (this.state !== "STARTED") throw new Error("Game not started or already finished.");
+    /**
+     * Handles a message sent by a player during their turn.
+     * Gets the AI's response and updates the turn based on AI decision.
+     * @param {string} connectionId - The ID of the player sending the message.
+     * @param {string} message - The text message from the player.
+     * @returns {Promise<object>} - The AI's response object.
+     */
+    async handlePlayerMessage(connectionId, message) {
+        if (this.state !== "STARTED") {
+            throw new Error("Game not started or already finished.");
+        }
+        // Check if it's the correct player's turn using new roles
+        const expectedPlayerId = this.turn === 'DEBATER_A' ? this.playerA : (this.turn === 'DEBATER_B' ? this.playerB : null);
+        if (connectionId !== expectedPlayerId) {
+            throw new Error(`Not debater ${connectionId}'s turn (Current turn: ${this.turn}, expected ID: ${expectedPlayerId}).`);
+        }
+        if (!this.gameChat) {
+            throw new Error("Debate chat not initialized.");
+        }
 
+        const playerRole = this.getPlayerRole(connectionId);
+        if (!playerRole) {
+            throw new Error(`Could not determine role for player ${connectionId}.`);
+        }
 
-        console.log("Sending player message to AI...");
-        const result = await this.gameChat.sendMessage(
-            `
-                THE PLAYER (${this.playerRepresent}) HAS SENT A MESSAGE.
-                THE MESSAGE IS ADDRESSED TO: [Determine recipient from message context, e.g., Judge, Witness name, Opponent].
-                ACT AS THE INTENDED RECIPIENT AND PROVIDE A REALISTIC RESPONSE BASED ON YOUR ROLE, THE CASE CONTEXT, AND THE MESSAGE.
-                IF THE MESSAGE IS FOR THE JUDGE, ACT AS THE JUDGE.
-                IF THE MESSAGE IS FOR THE OPPONENT LAWYER, ACT AS THE OPPONENT LAWYER.
-                IF THE MESSAGE IS FOR A WITNESS, ACT AS THAT WITNESS.
-                IF THE MESSAGE IS FOR THE PLAINTIFF/DEFENDANT (and player is not them), ACT AS THEM.
+        console.log(`Debater ${connectionId} (${playerRole}) sending message: "${message}"`);
 
-                PLAYER MESSAGE: "${message}"
+        const aiResponse = await this.getAIResponseToPlayer(playerRole, message);
 
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-                YOUR CURRENT ROLE PROFILE (if applicable, e.g., Judge): ${JSON.stringify(this.judge)} // Adapt based on recipient
+        // Check if the AI declared a winner
+        if (aiResponse && aiResponse.nextAction === 'DECLARE_WINNER') {
+            this.state = 'FINISHED';
+            this.turn = null; // No more turns
+            // Use new field names from schema
+            console.log(`Debate ${this.gameId} finished. Decision: ${aiResponse.decision}. Reason: ${aiResponse.reasoning}`);
+            // Optionally store verdict details
+            // this.verdict = aiResponse.verdict;
+            // this.reasoning = aiResponse.reasoning;
+        }
+        // Update turn only if the game is NOT finished, using new roles
+        else if (aiResponse && aiResponse.nextTurn && (aiResponse.nextTurn === 'DEBATER_A' || aiResponse.nextTurn === 'DEBATER_B')) { // Use DEBATER_A/B
+            this.turn = aiResponse.nextTurn;
+            console.log(`Turn updated by AI to: ${this.turn}`);
+        } else if (this.state !== 'FINISHED') { // Only warn if game not finished
+            console.warn(`AI Moderator response did not specify a valid nextTurn. Turn remains: ${this.turn}`);
+            // If game didn't finish but nextTurn is missing, maybe keep turn or default?
+            // For now, we keep the turn as is if it's not explicitly changed and game not finished.
+        }
 
-                WHAT IS YOUR REPLY AND ACTION (as the recipient)? ENSURE THE RESPONSE IS IN THE REQUIRED JSON FORMAT.
-            `
-        );
-        const response = await result.response.text();
-        console.log("Received AI response to player message.");
+        // TODO: Potentially update game state based on other aiResponse.nextAction values
 
-        return JSON.parse(response);
+        return aiResponse;
     }
 
-    async messageAsOpponentLawyer(message) {
-        if (!this.gameChat) throw new Error("Game chat not initialized.");
 
-        const result = await this.gameChat.sendMessage(
-            `
-                YOU ARE GOING TO ACT AS THE OPPONENT LAWYER.
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-                YOU WERE CALLED UPON BY SOMEONE TO PROVIDE A REPLY.
-                MESSAGE: ${message}
+    /**
+     * Gets the AI's response to a player's message.
+     * The AI determines the recipient, acts as them, and decides the next turn.
+     * @param {string} playerRole - The role ('PLAINTIFF' or 'DEFENDANT') of the player sending the message.
+     * @param {string} message - The player's message content.
+     * @returns {Promise<object>} - The parsed JSON response from the AI.
+     */
+    async getAIResponseToPlayer(playerRole, message) {
+        // Ensure gameChat is initialized (redundant check if called via handlePlayerMessage, but good practice)
+        if (!this.gameChat) throw new Error("Debate chat not initialized.");
 
-                WHAT IS YOUR REPLY? (Return JSON)
-            `
-        )
-        const response = await result.response.text();
-        return JSON.parse(response);
+        console.log(`Getting AI Moderator response to message from ${playerRole}...`);
+        // Updated prompt context and instructions for moderator role
+        const prompt = `
+                DEBATER ${playerRole === 'DEBATER_A' ? 'A' : 'B'} HAS SENT A MESSAGE/ARGUMENT.
+                DEBATER MESSAGE: "${message}"
+
+                CONTEXT:
+                - DEBATE TOPIC (SDG Focus): ${JSON.stringify(this.topic)} // Use this.topic
+                - YOUR MODERATOR PROFILE: ${JSON.stringify(this.moderator)} // Use this.moderator
+                - CURRENT TURN: ${this.turn} (This was the debater who just sent the message)
+                - DEBATE HISTORY/RULES: (Refer to initial prompt and ongoing conversation history)
+
+                INSTRUCTIONS AS MODERATOR:
+                1. Evaluate the debater's message/argument based on its relevance to the SDG topic, the debate rules, and the current phase.
+                2. Provide a relevant moderator response ('reply'). This could be acknowledging the point, asking a clarifying question to the debater, transitioning to the next phase/debater, or reminding of rules/time limits. Keep it concise and neutral.
+                3. **Crucially, determine the next logical step ('nextAction') in the debate structure (e.g., REQUEST_ARGUMENT_B, REQUEST_REBUTTAL_A, REQUEST_CLOSING_A, DECLARE_WINNER).** Follow standard debate flow.
+                4. **Equally crucially, determine whose turn it should be next ('nextTurn': 'DEBATER_A' or 'DEBATER_B').** This usually alternates but might stay the same if asking for clarification from the current speaker.
+                5. Ensure your entire response strictly adheres to the required JSON schema.
+                6. If 'nextAction' is 'DECLARE_WINNER', you MUST include the 'decision' ('DEBATER_A_WINS', 'DEBATER_B_WINS', or 'DRAW') and 'reasoning' fields based *only* on the arguments presented during this debate. Otherwise, 'decision' and 'reasoning' should be null or omitted. Base the decision on argument quality, relevance to the SDG topic, and persuasiveness.
+            `;
+        // Use the object format { message: prompt } for sendMessage
+        const result = await this.gameChat.sendMessage({ message: prompt });
+
+        // Access response text directly via result.text
+        const responseText = result.text;
+        console.log("Received AI Moderator response text:", responseText);
+
+        // ... existing try/catch for parsing ...
+        try {
+            const parsedResponse = JSON.parse(responseText);
+            // ... existing validation ...
+            if (parsedResponse.nextAction === 'DECLARE_WINNER' && !parsedResponse.decision) {
+                 console.warn("AI Moderator response declared winner but missing 'decision' field.");
+                 // Handle error - AI didn't follow instructions
+            }
+            return parsedResponse;
+        } catch (e) {
+            console.error("Failed to parse AI Moderator response:", responseText, e);
+            throw new Error("Invalid JSON response from AI Moderator.");
+        }
     }
 
-    async messageAsJudge(message) {
-        if (!this.gameChat) throw new Error("Game chat not initialized.");
+    // Removed messageAsOpponentLawyer method
+    // Removed messageAsJudge method
+    // Removed messageAsWitness method
+    // Removed messageAsPlaintiff method
+    // Removed messageAsDefendant method
 
-        const result = await this.gameChat.sendMessage(
-            `
-                YOU ARE GOING TO ACT AS THE JUDGE.
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-                MESSAGE: ${message}
+    static defaultModel = "gemini-2.0-flash-lite"; // DO NOT CHANGE
 
-                WHAT IS YOUR REPLY? (Return JSON)
-                REPLY PROFILE: ${JSON.stringify(this.judge)}
-            `
-        );
-        const response = await result.response.text();
-        return JSON.parse(response); 
-    }
-
-    async messageAsWitness(message, witnessName) {
-        if (!this.gameChat) throw new Error("Game chat not initialized.");
-
-        const witnessProfile = [...(this.case.defendantWitnesses || []), ...(this.case.plaintiffWitnesses || [])].find(w => w.name === witnessName);
-        if (!witnessProfile) throw new Error(`Witness ${witnessName} not found in case.`);
-
-        const result = await this.gameChat.sendMessage(
-            `
-                YOU ARE GOING TO ACT AS THE WITNESS: ${witnessName}.
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-                PROFILE OF WITNESS: ${JSON.stringify(witnessProfile)}
-                MESSAGE: ${message}
-
-                WHAT IS YOUR REPLY? (Return JSON)
-            `
-        );
-        const response = await result.response.text();
-        return JSON.parse(response);
-    }
-
-    async messageAsPlaintiff(message) {
-        if (!this.gameChat) throw new Error("Game chat not initialized.");
-        
-        const result = await this.gameChat.sendMessage(
-            `
-                YOU ARE GOING TO ACT AS THE PLAINTIFF.
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-                PROFILE OF PLAINTIFF: ${JSON.stringify(this.case.plaintiff)}
-                MESSAGE: ${message}
-
-                WHAT IS YOUR REPLY? (Return JSON)
-            `
-        );
-        const response = await result.response.text();
-        return JSON.parse(response);
-    }
-
-    async messageAsDefendant(message) {
-        if (!this.gameChat) throw new Error("Game chat not initialized.");
-        
-        const result = await this.gameChat.sendMessage(
-            `
-                YOU ARE GOING TO ACT AS THE DEFENDANT.
-                CASE CONTEXT: ${JSON.stringify(this.case)}
-                PROFILE OF DEFENDANT: ${JSON.stringify(this.case.defendant)}
-                MESSAGE: ${message}
-
-                WHAT IS YOUR REPLY? (Return JSON)
-            `
-        );
-        const response = await result.response.text();
-        return JSON.parse(response);
-    }
-
-    static async generateCase(requestedPrompt, caseType, baseTopic) {
-        const prompt = (
+    // Renamed static method and updated prompt
+    static async generateDebateTopic(requestedPrompt = null, specificSDG = null) {
+        const sdgFocus = specificSDG ? `focusing on UN SDG ${specificSDG}` : `related to one of the 17 UN Sustainable Development Goals (SDGs)`;
+        const promptText = (
             requestedPrompt ??
-            `Generate a sample ${caseType} case on a topic of: ${baseTopic} \ncase (RANDOM AND VARY YOUR RESPONSES) court case for a game in a format of below (the case should be able to be concluded with the information generated) MAKE SURE THE HIDDENDETAILS CAN BE REVEALED/CONCLUDED BASED ON OTHER AVAILABLE DETAILS SUCH AS PLAINTIFF DETAIL, DEFENDANT DETAIL, FACTS, EVIDENCE, AND REGULAR DETAILS:`
+            `Generate a specific, debatable topic ${sdgFocus}. The topic should allow for clear opposing stances (e.g., 'For' vs 'Against', 'Approach X' vs 'Approach Y'). Ensure the topic is specific enough for a focused debate but allows for multiple arguments. Provide brief context. Format the output STRICTLY according to the debateTopicSchema JSON schema, including sdgGoal (1-17), sdgTitle, topic, context, sideA_stance (perspective for Debater A), and sideB_stance (perspective for Debater B). VARY YOUR RESPONSES AND SDG FOCUS.`
         );
 
-        const genAI = new GoogleGenerativeAI(process.env.AI_API);
-        const model = genAI.getGenerativeModel({
-            model: this.model,
-            generationConfig: {
+        const genAI = new GoogleGenAI({ apiKey: process.env.AI_API });
+        console.log("Generating debate topic...");
+        // Use the direct generateContent method with config, referencing the static model name
+        const result = await genAI.models.generateContent({
+            model: Game.defaultModel, // DO NOT CHANGE
+            contents: promptText,
+            config: {
                 responseMimeType: "application/json",
-                responseSchema: caseSchema,
-                temperature: 1.5, // Slightly higher temp for more varied cases
+                responseSchema: debateTopicSchema, // Use correct schema
+                temperature: 1.5,
                 topP: 0.9
             },
-            // cachedContent: false // Consider if caching is needed here
         });
 
-        console.log("Generating case...");
-        const result = await model.generateContent(prompt);
-        const caseData = JSON.parse(result.response.text());
-        console.log("Case generated.");
-        return new Case(caseData);
+        const topicData = JSON.parse(result.text);
+        console.log("Debate topic generated:", topicData.topic);
+        return new DebateTopic(topicData); // Use renamed class
     }
 
-    static async generateJudgeProfile() {
-        const prompt = "Generate a unique and detailed judge profile (name, personality, background, judicial philosophy) for a courtroom simulation game. Ensure the profile is distinct each time. Respond ONLY with the JSON object matching the required schema.";
+    // Renamed static method and updated prompt
+    static async generateModeratorProfile() {
+        const promptText = "Generate a unique and detailed AI debate moderator profile (name, personality, moderationStyle) for a debate simulation game focused on UN SDG topics. Ensure the profile is distinct each time (e.g., different names, styles like 'Inquisitive', 'Formal', 'Encouraging', 'Strict'). Respond ONLY with the JSON object matching the moderatorSchema.";
 
-        const genAI = new GoogleGenerativeAI(process.env.AI_API);
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-latest",
-            generationConfig: {
+        const genAI = new GoogleGenAI({ apiKey: process.env.AI_API });
+        console.log("Generating moderator profile...");
+        // Use the direct generateContent method with config
+        const result = await genAI.models.generateContent({
+            model: "gemini-1.5-flash-latest", // DO NOT CHANGE
+            contents: promptText,
+            config: {
                 responseMimeType: "application/json",
-                responseSchema: judgeSchema,
+                responseSchema: moderatorSchema, // Use correct schema
                 temperature: 1.2,
                 topP: 0.9
             },
         });
 
-        console.log("Generating judge profile...");
-        const result = await model.generateContent(prompt);
-        const judgeData = JSON.parse(result.response.text());
-        console.log("Judge profile generated.");
-        return new Judge(judgeData);
+        const moderatorData = JSON.parse(result.text);
+        console.log("Moderator profile generated:", moderatorData.name);
+        return new Moderator(moderatorData); // Use renamed class
     }
 }
 

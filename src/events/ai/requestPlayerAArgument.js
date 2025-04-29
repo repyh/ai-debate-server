@@ -10,6 +10,10 @@ export default {
         });
     },
     sendToWS(conn, payload) {
-        conn.send(JSON.stringify(payload));
+        if (conn && conn.connected) { // Check if connection is valid
+            conn.sendUTF(JSON.stringify(payload)); // Use sendUTF for consistency
+       } else {
+            console.error("Attempted to send reply to disconnected or invalid connection.");
+       }
     }
 }

@@ -6,7 +6,7 @@ import http from 'http'; // Import Node.js http module
 import { server as WebSocketServer } from 'websocket'; // Import websocket library
 
 import Game from './classes/Game.js'; // Import the Game class
-import ServerResponse from './classes/ServerResponse.js'; // Import the ServerResponse class
+import { playerEventHandler } from './functions/eventHandler.js'; // Import only the necessary handler function
 
 dotenv.config();
 
@@ -32,10 +32,8 @@ const wsServer = new WebSocketServer({
 });
 
 function originIsAllowed(origin) {
-    // Put logic here to detect whether the specified origin is allowed.
-    // For development, you might allow all origins:
     console.log("WebSocket connection origin:", origin);
-    return true; // Be careful with this in production!
+    return true;
 }
 
 const connections = new Map();
@@ -47,32 +45,23 @@ wsServer.on('request', (request) => {
     //     console.log(`Connection from origin ${request.origin} rejected.`);
     //     return;
     // }
-
     const connection = request.accept(null, request.origin);
     const connectionId = uuidv4();
     connections.set(connectionId, connection);
     console.alert(`WebSocket Connection accepted: ${connectionId} from ${request.remoteAddress}`);
 
-    // --- Handle WebSocket Messages ---
     connection.on('message', (message) => {
         if (message.type === 'utf8') {
             console.log(`Received Message from ${connectionId}: ${message.utf8Data}`);
             try {
                 const parsedMessage = JSON.parse(message.utf8Data);
-                // TODO: Process the message based on its content
-                // e.g., route to game logic, handle authentication, etc.
-
-                // Example: Echo the message back
-                connection.sendUTF(JSON.stringify({ type: 'echo', data: parsedMessage }));
+                // Route message to the player event handler
+                playerEventHandler(connectionId, connection, connections, parsedMessage, activeGames);
 
             } catch (e) {
                 console.error(`Error parsing message from ${connectionId}:`, e);
                 connection.sendUTF(JSON.stringify({ type: 'error', message: 'Invalid JSON received' }));
             }
-        } else if (message.type === 'binary') {
-            console.log(`Received Binary Message from ${connectionId}: ${message.binaryData.length} bytes`);
-            // Handle binary data if needed
-            connection.sendBytes(message.binaryData); // Example: Echo binary data
         }
     });
 
