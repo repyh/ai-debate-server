@@ -1,0 +1,238 @@
+[
+    {
+        "description": "This law governs contracts, agreements enforceable by law.",
+        "law": "A contract is a legally binding agreement between two or more parties, creating obligations to do or not do something. To be valid, a contract typically requires offer, acceptance, consideration, and mutual intent."
+    },
+    {
+        "description": "This law outlines liability for causing harm or damage.",
+        "law": "A tort is a civil wrong that causes someone to suffer loss or harm resulting in legal liability for the person who commits the tortious act. Common torts include negligence, defamation, and intentional infliction of emotional distress."
+    },
+    {
+        "description": "This law addresses the misuse of another's name or likeness for commercial gain.",
+        "law": "Right of publicity is a tort that protects a person's right to control the commercial use of their identity, including their name, likeness, and other personal attributes."
+    },
+    {
+        "description": "This law relates to property rights.",
+        "law": "Real property refers to land and any permanently attached improvements. Personal property refers to movable items. Property ownership entails rights of possession, use, and disposal, subject to legal limitations."
+    },
+    {
+        "description": "This law defines when a person is liable for not taking reasonable care which results in injury.",
+        "law": "Negligence occurs when a person fails to exercise reasonable care, causing foreseeable harm to another person or their property. A plaintiff must prove duty of care, breach of duty, causation, and damages to establish negligence."
+    },
+    {
+        "description": "This law relates to product defects.",
+        "law": "Product liability addresses the responsibility of manufacturers and sellers for injuries caused by defective products. Liability can arise from manufacturing defects, design defects, or failure to warn."
+    },
+    {
+        "description": "This law defines the parameters for agreements between business",
+        "law": "Antitrust laws are designed to promote fair competition. Agreements among competitors that restrain trade, such as price-fixing or market allocation, are often prohibited."
+    },
+    {
+        "description": "This law relates to the violation of a copyright",
+        "law": "Copyright protects the original works of authors. It grants exclusive rights to copy, distribute, and create derivative works."
+    },
+    {
+        "description": "This law defines the process of legal proceeding of a case",
+        "law": "Rules of Civil Procedure govern the process of civil litigation, including the filing of lawsuits, discovery, motions, and trial procedures. These rules ensure fairness and order in legal proceedings."
+    },
+    {
+        "description": "This law explains the conditions that must be met for a case to be heard in court.",
+        "law": "Jurisdiction defines the authority of a court to hear and decide a case. It requires that the court has jurisdiction over the subject matter and the parties involved in the lawsuit."
+    },
+    {
+        "description": "This law is about the type of damages a civil court might award.",
+        "law": "Damages in a civil case can be compensatory (intended to make the plaintiff whole) or punitive (intended to punish the defendant). Special and general damages are types of compensatory damages. "
+    },
+    {
+        "description": "This law explains the period of time after which legal action can not be filed.",
+        "law": "Statute of Limitations set a deadline for filing a lawsuit. If a lawsuit is filed after the statute of limitations expires, it will be dismissed. "
+    },
+    {
+        "description": "This law defines who can be held responsible",
+        "law": "Vicarious Liability occurs when one party is held responsible for the actions of another party, often based on a relationship such as employer-employee or parent-child."
+    },
+    {
+        "description": "This law defines that a company is legally considered a person.",
+        "law": "Corporate law treats a corporation as a legal person, separate from its owners. It grants rights and responsibilities, including the ability to enter contracts and be sued."
+    },
+    {
+        "description": "This law is to protect a party that makes a promise.",
+        "law": "Promissory Estoppel prevents a party from backing out of a promise if the other party reasonably relied on the promise to their detriment."
+    },
+    {
+        "description": "This law outlines when an action is justifiable in the interest of others",
+        "law": "Doctrine of necessity provides a defense to liability when a person commits a tort in order to prevent a greater harm."
+    },
+    {
+        "description": "This law governs how a case can be proved in court",
+        "law": "Rules of evidence govern the admissibility of information in court, which helps to determine if the information presented is relevant and reliable."
+    },
+    {
+        "description": "This law gives someone a certain legal status.",
+        "law": "The principle of standing requires that a plaintiff have a direct and concrete injury in order to bring a lawsuit."
+    },
+    {
+        "description": "This law determines the proper way of presenting a case to a judge or a jury.",
+        "law": "The burden of proof describes who has the responsibility of proving something to a judge or jury."
+    },
+    {
+        "description": "This law allows some information that could otherwise be considered inadmissible to be presented.",
+        "law": "The hearsay rule generally prohibits the use of out-of-court statements as evidence, unless there is an exception."
+    },
+    {
+        "description": "This law sets the guidelines for settlements between parties.",
+        "law": "Mediation and arbitration offer methods for resolving disputes outside of the courtroom and can be binding."
+    },
+    {
+        "description": "This law outlines some of the duties that one party owes another.",
+        "law": "A fiduciary duty is a duty of loyalty and care owed by one party to another."
+    },
+    {
+        "description": "This law establishes guidelines on the proper collection of information.",
+        "law": "Discovery refers to the process of exchanging information and evidence between the parties in a lawsuit. "
+    },
+    {
+        "description": "This law allows the courts to examine something as evidence.",
+        "law": "The doctrine of res judicata states that a claim which has been litigated to a final judgment can not be relitigated."
+    },
+    {
+        "description": "This law sets forth the parameters for ownership.",
+        "law": "Title is the legal ownership of property. Title transfers when a person acquires ownership."
+    },
+    {
+        "description": "This law explains some basic business laws.",
+        "law": "An offer must be made by one party to another with a clear and definite expression of the terms of the contract."
+    },
+    {
+        "description": "This law is based on prior actions.",
+        "law": "The doctrine of Respondeat Superior holds an employer liable for the actions of their employee if the actions occurred during employment."
+    },
+    {
+        "description": "This law explains a condition on ownership.",
+        "law": "An easement gives someone the right to use another person's property for a specific purpose."
+    },
+    {
+        "description": "This law defines what happens in certain legal cases",
+        "law": "Liquidated damages refer to the amount of compensation for breach of contract, agreed upon in advance by both parties."
+    },
+    {
+        "description": "This law helps set a base level for behavior.",
+        "law": "Good faith is the legal principle requiring honesty in transactions."
+    },
+    {
+        "description": "This law states that one may not profit off one's own wrong doing.",
+        "law": "The unclean hands doctrine is an equitable defense that prevents a party from getting a remedy if they acted in bad faith."
+    },
+    {
+        "description": "This law describes what is a civil action",
+        "law": "A civil action is any lawsuit not criminal in nature. This involves disagreements between individuals, organizations or government bodies."
+    },
+    {
+        "description": "This law protects people who have been defamed.",
+        "law": "Defamation protects against false statements which are published to a third party."
+    },
+    {
+        "description": "This law helps establish ownership.",
+        "law": "The Uniform Commercial Code provides guidelines for contracts related to the sale of goods."
+    },
+    {
+        "description": "This law determines when one's own actions protect from liability.",
+        "law": "Assumption of risk refers to when an individual accepts responsibility for their own injury or damages if a risk is inherent in a given activity."
+    },
+    {
+        "description": "This law describes actions taken during discovery.",
+        "law": "Deposition refers to the pre-trial examination of a witness under oath."
+    },
+    {
+        "description": "This law has to do with certain cases.",
+        "law": "Subrogation occurs when an insurance company takes the rights of its insured to pursue an action against a responsible third party to recover payments."
+    },
+    {
+        "description": "This law determines some business practices.",
+        "law": "Trade secrets are confidential business information giving a competitive edge, and can be protected if reasonable efforts are made to keep it secret."
+    },
+    {
+        "description": "This law governs what is appropriate to include as evidence",
+        "law": "Relevant evidence means information that has a tendency to make a fact more or less probable."
+    },
+    {
+        "description": "This law refers to who makes the call",
+        "law": "In a trial by jury, it is the job of the jurors to weigh evidence and determine facts. The judge, in a jury trial, oversees the trial to make sure the law is followed."
+    },
+    {
+        "description": "This law explains what a contract requires.",
+        "law": "Consideration is an element in the formation of a contract which requires something of value being exchanged."
+    },
+    {
+        "description": "This law can refer to the validity of a case",
+        "law": "A claim for declaratory relief seeks a judgment that declares the rights and duties of parties."
+    },
+    {
+        "description": "This law describes when actions are to be filed",
+        "law": "Laches can bar a legal claim when a party delays the exercise of its rights, which is detrimental to the other party."
+    },
+    {
+        "description": "This law states how much information one can give",
+        "law": "The parol evidence rule says a written contract cannot be changed by evidence from prior negotiations. "
+    },
+    {
+        "description": "This law relates to contracts.",
+        "law": "The principle of substantial performance determines whether one party has done enough to comply with a contract."
+    },
+    {
+        "description": "This law outlines some procedures",
+        "law": "Interrogatories are a written discovery tool to seek responses to written questions under oath."
+    },
+    {
+        "description": "This law defines that some items may be illegal to obtain.",
+        "law": "The fruit of the poisonous tree doctrine means evidence obtained through an illegal act is inadmissible."
+    },
+    {
+        "description": "This law sets conditions of a valid case",
+        "law": "A party must be properly served with notice to appear in a legal case to give the court personal jurisdiction."
+    },
+    {
+        "description": "This law states that one should behave appropriately.",
+        "law": "A duty of good faith and fair dealing exists in a contract. Parties should act with good faith in contract."
+    },
+    {
+        "description": "This law protects some types of information.",
+        "law": "Attorney-client privilege is a legal concept which prevents a lawyer from sharing private information."
+    },
+    {
+        "description": "This law discusses the scope of law",
+        "law": "Preemption doctrine prevents state or local governments from conflicting with federal law. "
+    },
+    {
+        "description": "This law helps clarify how much information can be given in court.",
+        "law": "A motion to strike asks the court to remove something improper or unnecessary from a case."
+    },
+    {
+        "description": "This law has to do with agreements.",
+        "law": "Accord and satisfaction means an agreement where parties settle an existing debt by doing or paying something different."
+    },
+    {
+        "description": "This law describes something which the jury must decide on",
+        "law": "A motion for summary judgment can be made where a court determines there is no material fact at issue, allowing the case to be resolved."
+    },
+    {
+        "description": "This law is about how some business transactions occur",
+        "law": "The statute of frauds requires some contracts be written. These include land sales or those lasting more than one year."
+    },
+    {
+        "description": "This law has to do with one person representing another.",
+        "law": "A power of attorney is a legal document giving authority to someone else to act for the signer."
+    },
+    {
+        "description": "This law establishes rules of evidence",
+        "law": "Direct examination means when a party presents its own witness and examines the witness."
+    },
+    {
+        "description": "This law clarifies when there may be liability",
+        "law": "Strict liability occurs where someone is liable for something even if no negligence or intent is proven."
+    },
+    {
+        "description": "This law may be relevant in a contract.",
+        "law": "Novation means substituting a new agreement for an existing one, and it releases a party from the old agreement."
+    }
+]

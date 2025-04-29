@@ -1,0 +1,206 @@
+[
+    {
+        "description": "Governs the standards for a successful appeal.",
+        "law": "An appeal can be granted if a prejudicial error of law occurred during the original trial, if new evidence is discovered that would have likely changed the outcome, or if the original verdict was against the weight of the evidence."
+    },
+    {
+        "description": "Specifies the limitations on appealing factual findings.",
+        "law": "Appeals courts generally defer to the factual findings of the trial court and will only overturn these findings if they are clearly erroneous or unsupported by the evidence presented."
+    },
+    {
+        "description": "Addresses the scope of the appeals court's review.",
+        "law": "Appeals courts typically review only issues that were properly raised and preserved for appeal in the lower court."
+    },
+    {
+        "description": "Relates to the handling of new evidence on appeal.",
+        "law": "Appeals courts usually do not consider new evidence that was not presented in the original trial, except in limited circumstances such as if the new evidence is discovered after the trial and could have changed the outcome."
+    },
+    {
+        "description": "Concerned with the standards to grant an appeal.",
+        "law": "The appellant bears the burden of demonstrating that the trial court committed a reversible error that warrants a new trial or other corrective action."
+    },
+    {
+        "description": "Concerning the procedures of appeal.",
+        "law": "Appeals must be filed within a specific timeframe following the judgment of the lower court, and must follow all requirements of the appeals process."
+    },
+    {
+        "description": "Relates to the remedies available on appeal.",
+        "law": "An appeals court can affirm the lower court's decision, reverse it, modify it, or remand the case back to the lower court for further proceedings. "
+    },
+    {
+        "description": "Concerned with the harmless error rule.",
+        "law": "Even if an error occurred during the trial, an appellate court may uphold the judgment if the error did not affect the outcome of the case and thus was 'harmless'."
+    },
+    {
+        "description": "Address the role of precedent.",
+        "law": "Appellate courts are bound by the decisions of higher courts within their jurisdiction and must follow established legal precedent when deciding a case. "
+    },
+    {
+        "description": "Concerned with the the requirements of briefs and oral arguments on appeal.",
+        "law": "Parties must submit written briefs outlining their arguments and may also present oral arguments to the appellate court to support their positions. "
+    },
+    {
+        "description": "Deals with the doctrine of judicial estoppel.",
+        "law": "A party cannot contradict statements or positions taken in a previous judicial proceeding if doing so would be to the detriment of another party."
+    },
+    {
+        "description": "Relates to res judicata and the preclusion of claims.",
+        "law": "A final judgment on the merits of a claim bars a party from re-litigating the same claim in a subsequent lawsuit, and also bars claims that could have been brought in the prior action. "
+    },
+    {
+        "description": "Concerned with the doctrine of collateral estoppel.",
+        "law": "Once an issue of fact or law has been determined by a court of competent jurisdiction, that determination is conclusive in a subsequent suit based on a different cause of action involving a party to the prior litigation."
+    },
+    {
+        "description": "Concerns waiver of appealable rights.",
+        "law": "A party can waive its right to appeal an issue if it did not object to the issue at trial. "
+    },
+    {
+        "description": "Addresses the principle of standing.",
+        "law": "The party bringing the appeal must have suffered a concrete and particularized injury, fairly traceable to the trial court's decision, and redressable by a favorable ruling from the appeals court. "
+    },
+    {
+        "description": "Address the issues that the appeals court can consider.",
+        "law": "The scope of review on appeal is limited to those issues raised and properly preserved for appeal in the lower court, as a general rule. "
+    },
+    {
+        "description": "Relates to the doctrine of invited error.",
+        "law": "A party cannot challenge on appeal a ruling or decision of the trial court that the party itself induced or invited."
+    },
+    {
+        "description": "Addresses the burden of proof on appeal.",
+        "law": "The party appealing a trial court's decision (the appellant) bears the burden of demonstrating that the trial court committed an error that warrants reversal or modification of the judgment."
+    },
+    {
+        "description": "Concerning interlocutory appeals.",
+        "law": "In some cases, a party may appeal certain trial court rulings before a final judgment is rendered (interlocutory appeals), but these are usually limited to specific situations and require permission from the appellate court."
+    },
+    {
+        "description": "Relates to amicus curiae briefs.",
+        "law": "Third parties who are not directly involved in the case but have an interest in the outcome may file amicus curiae (friend of the court) briefs to provide the appellate court with additional information or legal arguments. "
+    },
+    {
+        "description": "Deals with sanctions.",
+        "law": "Appellate courts have the power to impose sanctions on parties or attorneys who file frivolous appeals or engage in misconduct during the appellate process."
+    },
+    {
+        "description": "Concerned with the power to take additional actions after the case has been decided.",
+        "law": "An appellate court's judgment is usually final and binding on the lower court and the parties, though the losing party may seek further review in a higher court (such as a state supreme court or the U.S. Supreme Court, depending on the case). "
+    },
+    {
+        "description": "Concerning the concept of ripeness and mootness.",
+        "law": "An appeals court will only hear a case if there is an actual case or controversy and if the issue presented is ripe for review, and will not decide cases that are moot. "
+    },
+    {
+        "description": "Concerns the requirements of procedural error.",
+        "law": "The party bringing the appeal must show that there was a procedural error, that it was significant enough to impact the trial outcome, and that they properly preserved it by making timely objections and following all court procedures at the trial level. "
+    },
+    {
+        "description": "Addresses the final judgement rule.",
+        "law": "An appellate court can only review final judgments or orders from the lower court, meaning that the trial court's decision has fully resolved all claims and issues."
+    },
+    {
+        "description": "Concerned with the principle of separation of powers.",
+        "law": "The separation of powers doctrine limits the appellate court's ability to interfere with the actions of the legislative or executive branches. For instance, an appeal that questions the constitutionality of a statute would be affected."
+    },
+    {
+        "description": "Deals with judicial discretion.",
+        "law": "If a trial court has acted within its legal discretion, the appellate court should not substitute its own judgment. If there is an error in judgment and abuse of power is determined by the appeals court, they may take actions on the judgment."
+    },
+    {
+        "description": "Concerning the handling of conflicting evidence.",
+        "law": "Where the evidence is in conflict, the appeals court may uphold the judgment if it is based on credible evidence, as determined by the trier of fact (the judge or jury)."
+    },
+    {
+        "description": "Addresses the issue of judicial review.",
+        "law": "Appeals courts generally exercise judicial review over the decisions of lower courts and other governmental entities, determining if there was an abuse of power."
+    },
+    {
+        "description": "Deals with the issue of remand.",
+        "law": "If the appellate court finds an error that requires further proceedings, the case can be remanded (sent back) to the trial court for further action, such as a new trial or a correction of the judgment."
+    },
+    {
+        "description": "Addresses the principle of stare decisis.",
+        "law": "Appellate courts are bound to follow precedent and apply existing law to cases with similar facts, promoting consistency in legal rulings. "
+    },
+    {
+        "description": "Relates to extraordinary writs.",
+        "law": "In limited circumstances, a party may seek an extraordinary writ, such as mandamus or prohibition, from an appellate court to compel a lower court to take or refrain from a certain action."
+    },
+    {
+        "description": "Concerned with constitutional questions.",
+        "law": "If an appeal involves a constitutional question, the appeals court will interpret the relevant constitutional provisions and apply them to the case."
+    },
+    {
+        "description": "Deals with the issue of judicial review of administrative agency decisions.",
+        "law": "Appellate courts may review the decisions of administrative agencies to determine if the agency acted within its authority and whether the decision was supported by substantial evidence and followed proper procedures. "
+    },
+    {
+        "description": "Addresses the standard of review for summary judgment.",
+        "law": "When reviewing a grant of summary judgment, an appeals court determines whether the moving party demonstrated that there is no genuine issue of material fact and that it is entitled to judgment as a matter of law."
+    },
+    {
+        "description": "Concerned with the issue of due process.",
+        "law": "Appellate courts ensure that all parties received a fair process and were given proper notice, a fair hearing, and an opportunity to present evidence. Any violations of due process can be a ground for appeal. "
+    },
+    {
+        "description": "Deals with the role of the court and parties.",
+        "law": "The appeals court can limit the arguments considered based on how they were originally handled. For instance, a party can not bring up a new legal argument at the appeals court that they did not bring up at the lower court."
+    },
+    {
+        "description": "Concerned with the concept of mootness.",
+        "law": "If, during the appeal process, the matter at issue is resolved or circumstances change so that the appellate decision would have no practical effect, the case may be dismissed as moot. "
+    },
+    {
+        "description": "Relates to issues with discovery.",
+        "law": "If the trial court made an error concerning the admission or rejection of evidence in the discovery phase of the trial, an appeal may be warranted if such errors prejudiced the outcome. "
+    },
+    {
+        "description": "Addresses the issue of sentencing in criminal cases.",
+        "law": "Appeals courts can review the sentences imposed in criminal cases, and may reduce, increase, or modify a sentence if there was an error in sentencing procedures, if the sentence violates legal standards, or is found to be unconstitutional."
+    },
+    {
+        "description": "Deals with the issue of ex post facto laws.",
+        "law": "An appellate court would rule on whether the trial violated the rule that laws can't punish people for acts committed before those acts were made illegal, and apply this rule."
+    },
+    {
+        "description": "Concerns double jeopardy.",
+        "law": "Appeals courts must rule on whether the trial court erred in relation to the principle that no person should be subject to more than one prosecution for the same offense. "
+    },
+    {
+        "description": "Relates to the statute of limitations.",
+        "law": "Appellate courts may examine whether the trial court's handling of the statute of limitations, i.e. whether a case was filed within the legal time frame to be actionable, was handled correctly. "
+    },
+    {
+        "description": "Addresses the issue of discovery and evidence.",
+        "law": "Appellate courts determine if the lower court correctly admitted, or improperly rejected, evidence that may have prejudiced the outcome. They are bound to the rules of evidence, as in all courtrooms."
+    },
+    {
+        "description": "Deals with issues of class action certification.",
+        "law": "Appeals courts are authorized to decide whether the requirements for a class action suit were met, if the lower court properly handled these factors."
+    },
+    {
+        "description": "Concerning jury instructions.",
+        "law": "Appellate courts assess whether the jury was correctly instructed on the applicable laws, and that such instructions were fair and did not mislead the jury."
+    },
+    {
+        "description": "Deals with the issues with conflicts of interest.",
+        "law": "If the trial court had a conflict of interest, the appellate court is authorized to handle and judge such matters. "
+    },
+    {
+        "description": "Concerns issues regarding search and seizure.",
+        "law": "Appeals courts have the ability to review a trial that had improperly admitted or denied evidence regarding an illegal search and seizure."
+    },
+    {
+        "description": "Relates to self incrimination.",
+        "law": "Appellate courts will ensure that the trial did not compel an accused person to bear witness against himself."
+    },
+    {
+        "description": "Deals with confrontation clause rights.",
+        "law": "Appeals courts will examine a trial and judge if the right to confront and cross-examine witnesses against them was provided to an accused person. "
+    },
+    {
+        "description": "Addresses issues of judicial misconduct.",
+        "law": "Appellate courts will make judgements on claims that a judge's behavior, decisions or other acts influenced the outcome of the case."
+    }
+]
