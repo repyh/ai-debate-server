@@ -90,7 +90,7 @@ wsServer.on('request', (request) => {
         type: 'WELCOME_MESSAGE',
         payload: {
             title: "Message Board",
-            message: "Welcome to the AI Debate Arena! Create a room or join an existing one to start."
+            message: "Welcome to Better Call Gemini! Create a room or join an existing one to start."
         }
     }));
     // --- End Welcome Message ---
