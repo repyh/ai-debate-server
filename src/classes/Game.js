@@ -114,6 +114,7 @@ class Game {
                 SET the 'nextAction' field to 'REQUEST_OPENING_A'.
                 YOUR MODERATOR PROFILE: ${JSON.stringify(this.moderator)}
                 DEBATE TOPIC (SDG Focus): ${JSON.stringify(this.topic)} // Use this.topic
+                FOR THE NEXT MESSAGE YOU'RE ABOUT THE SEND, INCLUDE THE STANCE OF DEBATER A (e.g., 'Argues for...', 'Proposes...') AND DEBATER B (e.g., 'Argues against...', 'Suggests alternative...').
             `;
         // Use the object format { message: prompt } for sendMessage
         const result = await this.gameChat.sendMessage({ message: prompt });
