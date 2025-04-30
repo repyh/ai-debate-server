@@ -1,4 +1,5 @@
 import { broadcastToGameRoom } from '../../utils/websocketUtils.js';
+import chalk from 'chalk'; // Import chalk
 
 export default {
     event: 'JOIN_ROOM',
@@ -14,6 +15,8 @@ export default {
         const { gameId } = payload;
 
         if (!gameId) {
+            // Use console.warn for validation errors
+            console.warn(`JOIN_ROOM failed for ${chalk.yellow(connectionId)}: Missing gameId.`);
             connection.sendUTF(JSON.stringify({ type: 'JOIN_FAILED', message: 'Missing gameId in payload.' }));
             return;
         }
@@ -21,18 +24,24 @@ export default {
         const gameInstance = activeGames.get(gameId);
 
         if (!gameInstance) {
+            // Use console.warn
+            console.warn(`JOIN_ROOM failed for ${chalk.yellow(connectionId)}: Game ${chalk.yellow(gameId)} not found.`);
             connection.sendUTF(JSON.stringify({ type: 'JOIN_FAILED', message: 'Game not found.' }));
             return;
         }
 
         // Check if Player B slot is already taken
         if (gameInstance.playerB) {
+            // Use console.warn
+            console.warn(`JOIN_ROOM failed for ${chalk.yellow(connectionId)}: Game ${chalk.yellow(gameId)} is full.`);
             connection.sendUTF(JSON.stringify({ type: 'GAME_FULL', message: 'Debate room is already full.' }));
             return;
         }
 
         // Check if player is trying to join their own game as player B
         if (gameInstance.playerA === connectionId) {
+             // Use console.warn
+             console.warn(`JOIN_ROOM failed for ${chalk.yellow(connectionId)}: Attempted to join own game ${chalk.yellow(gameId)} as Debater B.`);
              connection.sendUTF(JSON.stringify({ type: 'JOIN_FAILED', message: 'Cannot join your own debate as Debater B.' }));
              return;
         }
@@ -64,10 +73,12 @@ export default {
                 connectionId // Exclude the joining player
             );
 
-            console.log(`Debater ${connectionId} joined game ${gameId} as Debater B.`);
+            // Use console.info for successful joins
+            console.info(`Debater ${chalk.yellow(connectionId)} joined game ${chalk.green(gameId)} as Debater B.`);
 
         } catch (error) {
-             console.error(`Error joining room ${gameId} for ${connectionId}:`, error);
+             // Use console.error
+             console.error(`Error joining room ${chalk.yellow(gameId)} for ${chalk.yellow(connectionId)}:`, error);
              connection.sendUTF(JSON.stringify({ type: 'JOIN_FAILED', message: 'Failed to join debate room.' }));
              // Consider removing player B if setPlayerB failed partially?
              if(gameInstance.playerB === connectionId) {

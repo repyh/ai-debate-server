@@ -3,6 +3,7 @@ import pkg from 'websocket';
 const { client: WebSocketClient } = pkg;
 import readline from 'readline';
 
+// nigga: 'ws://id1.chrisg.my.id:3000'
 const serverAddress = 'ws://localhost:3000'; // Adjust if your server runs elsewhere
 
 const client = new WebSocketClient();
@@ -62,15 +63,15 @@ function displayGameUpdate(payload) {
         console.log(`[${payload.moderatorName} (Moderator)]: ${payload.reply}`); // Display moderator name
         nextTurnPlayer = payload.nextTurn; // DEBATER_A or DEBATER_B
         if (!isGameStarted) {
-             isGameStarted = true;
-             console.log("Debate has officially started!");
+            isGameStarted = true;
+            console.log("Debate has officially started!");
         }
     }
     // Fallback
     else if (payload.message) {
-         console.log(`[System/Unknown]: ${payload.message}`);
-         nextTurnPlayer = payload.nextTurn;
-         if (nextTurnPlayer) isGameStarted = true;
+        console.log(`[System/Unknown]: ${payload.message}`);
+        nextTurnPlayer = payload.nextTurn;
+        if (nextTurnPlayer) isGameStarted = true;
     } else {
         console.log(`[System/Unknown]: ${JSON.stringify(payload)}`);
     }
@@ -79,7 +80,7 @@ function displayGameUpdate(payload) {
     // Determine next turn using updated roles
     if (!isGameOver && nextTurnPlayer) {
         isMyTurn = (myRole === 'DEBATER_A' && nextTurnPlayer === 'DEBATER_A') ||
-                   (myRole === 'DEBATER_B' && nextTurnPlayer === 'DEBATER_B');
+            (myRole === 'DEBATER_B' && nextTurnPlayer === 'DEBATER_B');
 
         if (isMyTurn) {
             console.log("\n*** It's your turn to speak! ***"); // Updated text
@@ -88,8 +89,8 @@ function displayGameUpdate(payload) {
             console.log(`\n--- Waiting for ${waitingFor} ---`);
         }
     } else if (!isGameOver) {
-         isMyTurn = false;
-         console.log("\n--- Waiting for moderator or opponent... ---"); // Changed waiting message
+        isMyTurn = false;
+        console.log("\n--- Waiting for moderator or opponent... ---"); // Changed waiting message
     } else {
         isMyTurn = false;
     }
@@ -140,9 +141,9 @@ function handleServerMessage(message) {
                     promptUser();
                     break;
                 case 'PLAYER_JOINED': // Server event type kept generic
-                     console.log(`\nDebater B (${data.payload.connectionId}) joined the debate.`); // Updated text
-                     promptUser(); // Re-prompt owner to start
-                     break;
+                    console.log(`\nDebater B (${data.payload.connectionId}) joined the debate.`); // Updated text
+                    promptUser(); // Re-prompt owner to start
+                    break;
                 case 'GAME_UPDATE':
                     displayGameUpdate(data.payload);
                     break;
@@ -187,30 +188,30 @@ function promptUser() {
 
     if (!gameId) {
         // Updated create/join room logic text
-         rl.question('Choose action: (1) Create Debate Room, (2) Join Debate Room <gameId>: ', (answer) => {
-             const parts = answer.split(' ');
-             const action = parts[0];
-             const id = parts[1];
+        rl.question('Choose action: (1) Create Debate Room, (2) Join Debate Room <gameId>: ', (answer) => {
+            const parts = answer.split(' ');
+            const action = parts[0];
+            const id = parts[1];
 
-             if (action === '1') {
-                 sendToServer('CREATE_ROOM', {});
-             } else if (action === '2' && id) {
-                 sendToServer('JOIN_ROOM', { gameId: id });
-             } else {
-                 console.log("Invalid input. Use '1' or '2 <gameId>'."); // More specific help
-                 promptUser();
-             }
-         });
+            if (action === '1') {
+                sendToServer('CREATE_ROOM', {});
+            } else if (action === '2' && id) {
+                sendToServer('JOIN_ROOM', { gameId: id });
+            } else {
+                console.log("Invalid input. Use '1' or '2 <gameId>'."); // More specific help
+                promptUser();
+            }
+        });
     } else if (isGameOwner && !isGameStarted) {
-         rl.question('Debater B has joined. Start debate? (yes/no): ', (answer) => { // Updated text
-             if (answer.toLowerCase() === 'yes') {
-                 console.log("Sending START_GAME command...");
-                 sendToServer('START_GAME', { gameId });
-             } else {
-                 console.log("Waiting to start debate..."); // Updated text
-                 setTimeout(promptUser, 2000);
-             }
-         });
+        rl.question('Debater B has joined. Start debate? (yes/no): ', (answer) => { // Updated text
+            if (answer.toLowerCase() === 'yes') {
+                console.log("Sending START_GAME command...");
+                sendToServer('START_GAME', { gameId });
+            } else {
+                console.log("Waiting to start debate..."); // Updated text
+                setTimeout(promptUser, 2000);
+            }
+        });
     } else if (isGameStarted && isMyTurn) {
         rl.question('Your argument/statement: ', (message) => { // Updated prompt text
             if (message.trim()) {
@@ -224,8 +225,8 @@ function promptUser() {
     } else if (isGameStarted && !isMyTurn) {
         console.log("Waiting for opponent or moderator..."); // Updated text
     } else {
-         // Catch-all for other waiting states (e.g., waiting for game to start after joining)
-         console.log("Waiting for debate to start...");
+        // Catch-all for other waiting states (e.g., waiting for game to start after joining)
+        console.log("Waiting for debate to start...");
     }
 }
 

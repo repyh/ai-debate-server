@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import chalk from 'chalk'; // Import chalk
 
 // Helper to get __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -22,17 +23,21 @@ async function loadHandlers(directory, handlerMap, handlerType) {
             try {
                 const eventModule = (await import(modulePath)).default;
                 if (eventModule && eventModule.event && (eventModule.handle || eventModule.execute)) {
-                    console.log(`Loading ${handlerType} event handler: ${eventModule.event}`);
+                    // Use console.debug for loading handlers
+                    console.debug(`Loading ${handlerType} event handler: ${chalk.green(eventModule.event)}`);
                     handlerMap.set(eventModule.event, eventModule);
                 } else {
-                    console.warn(`Could not load ${handlerType} event handler from ${file}: Invalid format.`);
+                    // Use console.warn
+                    console.warn(`Could not load ${handlerType} event handler from ${chalk.yellow(file)}: Invalid format.`);
                 }
             } catch (error) {
-                console.error(`Error loading ${handlerType} event handler from ${file}:`, error);
+                // Use console.error
+                console.error(`Error loading ${handlerType} event handler from ${chalk.yellow(file)}:`, error);
             }
         }
     } catch (error) {
-        console.error(`Error reading ${handlerType} events directory ${eventsDir}:`, error);
+        // Use console.error
+        console.error(`Error reading ${handlerType} events directory ${chalk.yellow(eventsDir)}:`, error);
     }
 }
 
@@ -41,7 +46,8 @@ async function loadHandlers(directory, handlerMap, handlerType) {
 export function playerEventHandler(connectionId, connection, connections, message, activeGames) {
     // Ensure message has event and payload structure
     if (!message || typeof message.event !== 'string' || typeof message.payload === 'undefined') {
-        console.error(`Invalid message format received from ${connectionId}:`, message);
+        // Use console.error
+        console.error(`Invalid message format received from ${chalk.yellow(connectionId)}:`, message);
         connection.sendUTF(JSON.stringify({ type: 'error', message: 'Invalid message format. Expected { event: "...", payload: {...} }' }));
         return;
     }
@@ -50,15 +56,18 @@ export function playerEventHandler(connectionId, connection, connections, messag
 
     if (handler && typeof handler.handle === 'function') {
         try {
-            console.log(`Handling player event '${message.event}' for connection ${connectionId}`);
+            // Use console.info for handling events
+            console.info(`Handling player event '${chalk.green(message.event)}' for connection ${chalk.yellow(connectionId)}`);
             // Pass context: connectionId, specific connection, all connections, payload, activeGames map
             handler.handle(connectionId, connection, connections, message.payload, activeGames);
         } catch (error) {
-            console.error(`Error handling player event '${message.event}' for ${connectionId}:`, error);
+            // Use console.error
+            console.error(`Error handling player event '${chalk.red(message.event)}' for ${chalk.yellow(connectionId)}:`, error);
             connection.sendUTF(JSON.stringify({ type: 'error', message: `Error processing event ${message.event}` }));
         }
     } else {
-        console.warn(`No handler found for player event: ${message.event}`);
+        // Use console.warn
+        console.warn(`No handler found for player event: ${chalk.yellow(message.event)}`);
         connection.sendUTF(JSON.stringify({ type: 'error', message: `Unknown event type: ${message.event}` }));
     }
 }
@@ -72,7 +81,8 @@ export function getAiEventHandler(eventName) {
 // --- Initialize: Load all handlers ---
 (async () => {
     await loadHandlers('events/player', playerHandlers, 'player');
-    await loadHandlers('events/ai', aiHandlers, 'ai');
+    await loadHandlers('events/ai', aiHandlers, 'ai'); // Keep loading AI handlers if they exist
 
-    console.log("Event handlers loaded.");
+    // Use console.info
+    console.info("Event handlers loaded.");
 })();

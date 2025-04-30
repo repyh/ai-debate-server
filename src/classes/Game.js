@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import fs from 'fs';
+import chalk from 'chalk'; // Assuming chalk is used elsewhere or for consistency
 
 // Import new classes and schemas
 import DebateTopic from './DebateTopic.js';
@@ -7,22 +8,22 @@ import Moderator from './Moderator.js';
 import debateTopicSchema from "../../schemas/debate_topic_schema.js";
 import moderatorSchema from "../../schemas/moderator_schema.js";
 import replySchema from "../../schemas/reply_schema.js"; // Keep reply schema
+import predefinedTopics from '../../database/debateTopics.js'; // Import predefined topics
 
 // Removed extends Events
 class Game {
     constructor(data) {
         // Use new property names and roles
-        this.topic = data.topic; // Renamed from case
-        this.moderator = data.moderator; // Renamed from judge
-        this.state = "INIT"; // INIT, INITIALIZED, STARTED, FINISHED
-        this.turn = null; // null, DEBATER_A, DEBATER_B
+        this.topic = data.topic;
+        this.moderator = data.moderator;
+        this.state = "INIT";
+        this.turn = null;
         this.gameChat = null;
-        this.model = "gemini-2.0-flash-lite"; // DO NOT CHANGE
-        this.playerA = data.playerA; // Connection ID of Debater A
-        this.playerB = data.playerB; // Connection ID of Debater B
-        this.gameOwner = data.gameOwner; // Connection ID of the owner (Debater A)
+        this.model = "gemini-2.0-flash-lite";
+        this.playerA = data.playerA;
+        this.playerB = data.playerB;
+        this.gameOwner = data.gameOwner;
         this.gameId = data.gameId;
-        // Use new roles
         this.players = new Map(); // Stores { connectionId: { connection: wsConnection, role: 'DEBATER_A' | 'DEBATER_B' } }
 
         if (data.ownerConnection) {
@@ -52,7 +53,6 @@ class Game {
         return player ? player.role : null;
     }
 
-    // Removed the switchTurn() method as turns are no longer automatic
 
     async initGame() {
         // Use renamed prompt file
@@ -96,7 +96,6 @@ class Game {
         console.alert("Debate chat initialized."); // Keep console alert generic
     }
 
-    // Renamed method and updated prompt
     async doInitialModeratorMessage() {
         if (!this.gameChat) {
             throw new Error("Game chat not initialized. Call initGame first.");
@@ -181,8 +180,6 @@ class Game {
             // For now, we keep the turn as is if it's not explicitly changed and game not finished.
         }
 
-        // TODO: Potentially update game state based on other aiResponse.nextAction values
-
         return aiResponse;
     }
 
@@ -225,13 +222,10 @@ class Game {
         const responseText = result.text;
         console.log("Received AI Moderator response text:", responseText);
 
-        // ... existing try/catch for parsing ...
         try {
             const parsedResponse = JSON.parse(responseText);
-            // ... existing validation ...
             if (parsedResponse.nextAction === 'DECLARE_WINNER' && !parsedResponse.decision) {
-                 console.warn("AI Moderator response declared winner but missing 'decision' field.");
-                 // Handle error - AI didn't follow instructions
+                console.warn("AI Moderator response declared winner but missing 'decision' field.");
             }
             return parsedResponse;
         } catch (e) {
@@ -240,54 +234,85 @@ class Game {
         }
     }
 
-    // Removed messageAsOpponentLawyer method
-    // Removed messageAsJudge method
-    // Removed messageAsWitness method
-    // Removed messageAsPlaintiff method
-    // Removed messageAsDefendant method
+    static defaultModel = "gemini-2.0-flash-lite";
 
-    static defaultModel = "gemini-2.0-flash-lite"; // DO NOT CHANGE
+    // Modified static method to use predefined topics
+    static async generateDebateTopic() { // Removed requestedPrompt and specificSDG parameters
+        // 1. Select a random topic from the predefined list
+        const randomIndex = Math.floor(Math.random() * predefinedTopics.length);
+        const selectedTopicString = predefinedTopics[randomIndex];
 
-    // Renamed static method and updated prompt
-    static async generateDebateTopic(requestedPrompt = null, specificSDG = null) {
-        const sdgFocus = specificSDG ? `focusing on UN SDG ${specificSDG}` : `related to one of the 17 UN Sustainable Development Goals (SDGs)`;
-        const promptText = (
-            requestedPrompt ??
-            `Generate a specific, debatable topic ${sdgFocus}. The topic should allow for clear opposing stances (e.g., 'For' vs 'Against', 'Approach X' vs 'Approach Y'). Ensure the topic is specific enough for a focused debate but allows for multiple arguments. Provide brief context. Format the output STRICTLY according to the debateTopicSchema JSON schema, including sdgGoal (1-17), sdgTitle, topic, context, sideA_stance (perspective for Debater A), and sideB_stance (perspective for Debater B). VARY YOUR RESPONSES AND SDG FOCUS.`
-        );
+        // Extract SDG number and topic text (assuming format "SDG X_Title: Topic text")
+        const match = selectedTopicString.match(/^SDG (\d+)_.*?: (.*)$/);
+        let sdgNumber = null;
+        let topicText = selectedTopicString; // Fallback
+        if (match && match[1] && match[2]) {
+            sdgNumber = parseInt(match[1], 10);
+            topicText = match[2].trim();
+        } else {
+            console.warn(`Could not parse SDG number from topic: "${selectedTopicString}". AI will need to infer it.`);
+        }
+
+        // 2. Create a prompt asking the AI to format the selected topic
+        const promptText = `
+            Given the following debate topic: "${topicText}"
+            (This topic relates to UN SDG ${sdgNumber ? sdgNumber : 'goal to be identified'}).
+
+            Please format this topic into a JSON object strictly adhering to the debateTopicSchema.
+            Specifically, you need to provide:
+            - sdgGoal: The UN SDG number (integer 1-17). Infer if not explicitly given.
+            - sdgTitle: The official title of that UN SDG.
+            - topic: The exact debate topic text provided above.
+            - context: A brief background or context for this specific topic.
+            - sideA_stance: A suggested initial perspective or stance for Debater A (e.g., 'Argues for...', 'Proposes...').
+            - sideB_stance: A suggested initial perspective or stance for Debater B (e.g., 'Argues against...', 'Suggests alternative...').
+
+            Ensure the output is ONLY the valid JSON object matching the schema.
+        `;
 
         const genAI = new GoogleGenAI({ apiKey: process.env.AI_API });
-        console.log("Generating debate topic...");
-        // Use the direct generateContent method with config, referencing the static model name
+        // Use console.info for generating topic
+        console.info(`Requesting AI to format selected topic: "${topicText}"`);
+
         const result = await genAI.models.generateContent({
-            model: Game.defaultModel, // DO NOT CHANGE
+            model: Game.defaultModel, // Use the static default model
             contents: promptText,
             config: {
                 responseMimeType: "application/json",
-                responseSchema: debateTopicSchema, // Use correct schema
-                temperature: 1.5,
+                responseSchema: debateTopicSchema,
+                temperature: 0.8, // Slightly lower temp might help with formatting consistency
                 topP: 0.9
             },
         });
 
-        const topicData = JSON.parse(result.text);
-        console.log("Debate topic generated:", topicData.topic);
-        return new DebateTopic(topicData); // Use renamed class
+        try {
+            const topicData = JSON.parse(result.text);
+            // Use console.success for successful generation/formatting
+            console.success("Debate topic formatted by AI:", topicData.topic);
+            // Optional: Validate if the AI correctly identified the SDG number if it had to infer
+            if (sdgNumber && topicData.sdgGoal !== sdgNumber) {
+                console.warn(`AI identified SDG ${topicData.sdgGoal}, but expected ${sdgNumber} based on input string.`);
+            }
+            return new DebateTopic(topicData);
+        } catch (e) {
+            // Use console.error for parsing failures
+            console.error("Failed to parse AI response for topic formatting:", result.text, e);
+            throw new Error("Invalid JSON response from AI when formatting topic.");
+        }
     }
 
-    // Renamed static method and updated prompt
     static async generateModeratorProfile() {
         const promptText = "Generate a unique and detailed AI debate moderator profile (name, personality, moderationStyle) for a debate simulation game focused on UN SDG topics. Ensure the profile is distinct each time (e.g., different names, styles like 'Inquisitive', 'Formal', 'Encouraging', 'Strict'). Respond ONLY with the JSON object matching the moderatorSchema.";
 
         const genAI = new GoogleGenAI({ apiKey: process.env.AI_API });
         console.log("Generating moderator profile...");
-        // Use the direct generateContent method with config
+
         const result = await genAI.models.generateContent({
-            model: "gemini-1.5-flash-latest", // DO NOT CHANGE
+            model: Game.defaultModel,
             contents: promptText,
             config: {
                 responseMimeType: "application/json",
-                responseSchema: moderatorSchema, // Use correct schema
+                responseSchema: moderatorSchema,
                 temperature: 1.2,
                 topP: 0.9
             },
@@ -295,7 +320,7 @@ class Game {
 
         const moderatorData = JSON.parse(result.text);
         console.log("Moderator profile generated:", moderatorData.name);
-        return new Moderator(moderatorData); // Use renamed class
+        return new Moderator(moderatorData);
     }
 }
 

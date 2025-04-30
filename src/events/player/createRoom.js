@@ -1,8 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
 import Game from '../../classes/Game.js';
-// Import new classes
 import DebateTopic from '../../classes/DebateTopic.js';
 import Moderator from '../../classes/Moderator.js';
+import chalk from 'chalk'; // Import chalk
+
+// Helper function to generate a unique 6-digit ID
+function generateUniqueGameId(activeGames) {
+    let gameId;
+    do {
+        gameId = Math.floor(100000 + Math.random() * 900000).toString();
+    } while (activeGames.has(gameId));
+    return gameId;
+}
 
 export default {
     event: 'CREATE_ROOM',
@@ -15,7 +24,8 @@ export default {
      * @param {Map} activeGames - Map of all active games.
      */
     async handle(connectionId, connection, connections, payload, activeGames) {
-        console.log(`Handling CREATE_ROOM request from ${connectionId} with payload:`, payload);
+        // Use console.debug for detailed request logging
+        console.debug(`Handling CREATE_ROOM request from ${chalk.yellow(connectionId)} with payload:`, payload);
 
         try { // Add try...catch for async operations
 
@@ -24,7 +34,8 @@ export default {
             // Optionally allow specifying an SDG, otherwise random
             const debateTopic = await Game.generateDebateTopic(null, null); // Using updated method
 
-            const createdGameId = uuidv4();
+            // Replace uuidv4 with the new 6-digit ID generator
+            const createdGameId = generateUniqueGameId(activeGames);
             const gameInstance = new Game({
                 gameId: createdGameId,
                 gameOwner: connectionId,
@@ -45,10 +56,12 @@ export default {
                     message: 'Debate room created successfully! Waiting for Debater B.'
                 }
             }));
-            console.log(`Debate room ${createdGameId} created by ${connectionId} (Debater A). Topic: SDG ${debateTopic.sdgGoal} - ${debateTopic.topic}`); // Added topic info
+            // Use console.success for successful room creation
+            console.success(`Debate room ${chalk.green(createdGameId)} created by ${chalk.yellow(connectionId)} (Debater A). Topic: SDG ${debateTopic.sdgGoal} - ${debateTopic.topic}`); // Added topic info
 
         } catch (error) {
-            console.error(`Error creating debate room for ${connectionId}:`, error);
+            // Use console.error
+            console.error(`Error creating debate room for ${chalk.yellow(connectionId)}:`, error);
             connection.sendUTF(JSON.stringify({ type: 'error', message: 'Failed to create debate room.' }));
         }
     }

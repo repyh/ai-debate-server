@@ -1,3 +1,5 @@
+import chalk from 'chalk'; // Import chalk
+
 /**
  * Broadcasts a message to all players in a specific game room, optionally excluding one connection.
  * Assumes the game object has a `players` Map where keys are connection IDs and values
@@ -10,12 +12,14 @@
 export async function broadcastToGameRoom(game, message, excludeConnectionId = null) {
     // Check for game and players map
     if (!game || !game.players || !(game.players instanceof Map)) {
-        console.error('Invalid game object or players map passed to broadcastToGameRoom for game ID:', game?.gameId);
+        // Use console.error
+        console.error(`Invalid game object or players map passed to broadcastToGameRoom for game ID: ${chalk.yellow(game?.gameId)}`);
         return;
     }
 
     const messageString = JSON.stringify(message);
-    console.log(`Broadcasting to game ${game.gameId} (excluding ${excludeConnectionId || 'none'}): ${messageString}`);
+    // Use console.debug for broadcasting details
+    console.debug(`Broadcasting to game ${chalk.yellow(game.gameId)} (excluding ${chalk.yellow(excludeConnectionId) || 'none'}): ${messageString}`);
 
     // Iterate over the entries in the players Map
     for (const [connectionId, playerData] of game.players.entries()) {
@@ -29,12 +33,14 @@ export async function broadcastToGameRoom(game, message, excludeConnectionId = n
             try {
                 playerData.connection.sendUTF(messageString);
             } catch (error) {
-                console.error(`Failed to send message to player connection ${connectionId} in game ${game.gameId}:`, error);
+                // Use console.error
+                console.error(`Failed to send message to player connection ${chalk.yellow(connectionId)} in game ${chalk.yellow(game.gameId)}:`, error);
                 // Consider removing player/connection from game if send fails repeatedly
                 // game.players.delete(connectionId); // Example cleanup
             }
         } else {
-            console.warn(`Skipping broadcast to inactive or invalid connection ${connectionId} in game ${game.gameId}`);
+            // Use console.warn
+            console.warn(`Skipping broadcast to inactive or invalid connection ${chalk.yellow(connectionId)} in game ${chalk.yellow(game.gameId)}`);
             // Optionally remove inactive connections from the game's player list
             // game.players.delete(connectionId);
         }
