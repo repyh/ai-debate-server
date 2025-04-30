@@ -85,6 +85,16 @@ wsServer.on('request', (request) => {
     // Use console.success for successful connection
     console.success(`WebSocket Connection accepted: ${chalk.yellow(connectionId)} from ${request.remoteAddress}`);
 
+    // --- Send Welcome Message ---
+    connection.sendUTF(JSON.stringify({
+        type: 'WELCOME_MESSAGE',
+        payload: {
+            title: "Message Board",
+            message: "Welcome to the AI Debate Arena! Create a room or join an existing one to start."
+        }
+    }));
+    // --- End Welcome Message ---
+
     connection.on('message', (message) => {
         if (message.type === 'utf8') {
             // Use console.debug for detailed message logs

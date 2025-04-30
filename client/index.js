@@ -106,6 +106,14 @@ function handleServerMessage(message) {
             const data = JSON.parse(message.utf8Data);
 
             switch (data.type) {
+                // --- Added Case for Welcome Message ---
+                case 'WELCOME_MESSAGE':
+                    console.log(`\n--- ${data.payload.title || 'Server Message'} ---`);
+                    console.log(data.payload.message);
+                    console.log("--------------------");
+                    // Don't re-prompt immediately, let the connection logic handle the next prompt
+                    break;
+                // --- End Added Case ---
                 case 'error':
                     console.error(`\n!!! Server Error: ${data.message}`);
                     if (data.message.includes("Not debater")) { // Check for debate-specific error text
@@ -264,8 +272,8 @@ client.on('connect', (conn) => {
 
     connection.on('message', handleServerMessage);
 
-    // Initial prompt after connection
-    promptUser();
+    // Initial prompt after connection is now handled by the welcome message flow
+    // promptUser(); // Remove or comment out this initial prompt here
 });
 
 // --- Start the client ---
